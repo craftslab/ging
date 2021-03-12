@@ -1,2 +1,2 @@
 # ging
-Microservice framework in Go
+Data orchestration for machine learning in the cloud
