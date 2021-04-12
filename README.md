@@ -9,4 +9,4 @@
 
 ## Introduction
 
-*ging* is a pipeline orchestration for CI/CD written in Go.
+*ging* is a pipeline orchestrator for CI/CD written in Go.
