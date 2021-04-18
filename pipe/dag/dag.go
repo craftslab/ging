@@ -69,7 +69,7 @@ func (d *dag) Build(tasks []Task, deps map[string][]string) error {
 
 	for task, dep := range deps {
 		for _, prev := range dep {
-			if err := d.addLink(task, prev, d.graph.Nodes); err != nil {
+			if err := d.addLink(task, prev); err != nil {
 				return fmt.Errorf("failed to add link between %s and %s: %w", task, prev, err)
 			}
 		}
@@ -113,21 +113,21 @@ func (d *dag) Get(task ...string) (sets.String, error) {
 	return buf, nil
 }
 
-func (d *dag) addTask(t Task) (*Node, error) {
-	if _, ok := d.graph.Nodes[t.HashKey]; ok {
+func (d *dag) addTask(task Task) (*Node, error) {
+	if _, ok := d.graph.Nodes[task.HashKey]; ok {
 		return nil, errors.New("task duplicate")
 	}
 
 	n := &Node{
-		Task: t,
+		Task: task,
 	}
 
-	d.graph.Nodes[t.HashKey] = n
+	d.graph.Nodes[task.HashKey] = n
 
 	return n, nil
 }
 
-func (d *dag) addLink(task, prev string, nodes map[string]*Node) error {
+func (d *dag) addLink(task, prev string) error {
 	helper := func(task, prev *Node) error {
 		if task.Task.HashKey == prev.Task.HashKey {
 			return fmt.Errorf("cycle detected: %q", task.Task.HashKey)
@@ -140,12 +140,12 @@ func (d *dag) addLink(task, prev string, nodes map[string]*Node) error {
 		return nil
 	}
 
-	p, ok := nodes[prev]
+	p, ok := d.graph.Nodes[prev]
 	if !ok {
 		return fmt.Errorf("%s not present in nodes", prev)
 	}
 
-	t := nodes[task]
+	t := d.graph.Nodes[task]
 	if err := helper(t, p); err != nil {
 		return fmt.Errorf("failed to create link from %s to %s: %w", p.Task.HashKey, t.Task.HashKey, err)
 	}

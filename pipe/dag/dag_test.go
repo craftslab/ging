@@ -92,36 +92,54 @@ func TestGet(t *testing.T) {
 }
 
 func TestAddTask(t *testing.T) {
-	_ = &dag{
+	d := &dag{
 		cfg:   DefaultConfig(),
 		graph: &Graph{Nodes: map[string]*Node{}},
 	}
 
-	// TODO
+	_, err := d.addTask(Task{"task"})
+	assert.Equal(t, nil, err)
 
-	assert.Equal(t, nil, nil)
+	_, err = d.addTask(Task{"task"})
+	assert.NotEqual(t, nil, err)
 }
 
 func TestAddLink(t *testing.T) {
-	_ = &dag{
+	d := &dag{
 		cfg:   DefaultConfig(),
 		graph: &Graph{Nodes: map[string]*Node{}},
 	}
 
-	// TODO
+	_, err := d.addTask(Task{"task1"})
+	assert.Equal(t, nil, err)
 
-	assert.Equal(t, nil, nil)
+	_, err = d.addTask(Task{"task2"})
+	assert.Equal(t, nil, err)
+
+	err = d.addLink("task2", "task1")
+	assert.Equal(t, nil, err)
 }
 
 func TestLookForNode(t *testing.T) {
-	_ = &dag{
+	node2 := &Node{
+		Task: Task{"task2"},
+	}
+
+	node3 := &Node{
+		Task: Task{"task3"},
+		Prev: []*Node{node2},
+	}
+
+	d := &dag{
 		cfg:   DefaultConfig(),
 		graph: &Graph{Nodes: map[string]*Node{}},
 	}
 
-	// TODO
+	err := d.lookForNode("task1", []*Node{node2})
+	assert.Equal(t, nil, err)
 
-	assert.Equal(t, nil, nil)
+	err = d.lookForNode("task2", []*Node{node3})
+	assert.NotEqual(t, nil, err)
 }
 
 func TestFindSchedulable(t *testing.T) {
